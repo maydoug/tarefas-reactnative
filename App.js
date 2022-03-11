@@ -50,7 +50,7 @@ export default function App() {
           styles={styles.inputModal}
           />
           <TouchableOpacity style={styles.btnModal}>
-            <Text>Cadastrar</Text>
+            <Text style={styles.textBtnModal}>Cadastrar</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -128,6 +128,9 @@ const styles = StyleSheet.create({
 
   },
   btnModal:{
+
+  },
+  textBtnModal:{
 
   },
 
