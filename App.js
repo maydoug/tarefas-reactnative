@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, StatusBar, TouchableOpacity, FlatList } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, StatusBar, TouchableOpacity, FlatList, Modal, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import TaskList from './src/componets/TaskList';
+import * as Animatable from 'react-native-animatable';
+
+const AnimatedBtn = Animatable.createAnimatableComponent(TouchableOpacity);
 
 export default function App() {
   const [task, setTask] = useState([
@@ -11,6 +14,8 @@ export default function App() {
     {key: 4, task: 'Votar no lula' },
     {key: 5, task: 'Compra churrasco' },
   ]);
+  
+  const [open, setOpen] = useState(false);
 
   return (
     
@@ -27,12 +32,40 @@ export default function App() {
     data={task}
     keyExtractor={ (item) => String(item.key) }
     renderItem={ ({ item }) => <TaskList data={item} />}
-
+    
     />
 
-    <TouchableOpacity style={styles.button}>
-      <Ionicons name='ios-add' size={35} color='#fff' ></Ionicons>
-    </TouchableOpacity>
+    <Modal animationType="slide" transparent={false} visible={open}>
+      <SafeAreaView style={styles.modal}>
+        <View style={styles.modalHeader}>
+          <TouchableOpacity onPress={ () => setOpen(false)}>
+            <Ionicons style={{marginLeft: 5, marginRight: 5 }} name="md-arrow-back" size={40} color="#FFF" />
+          </TouchableOpacity>
+          <Text style={styles.modalTitle}>Nova tarefa</Text>
+        </View>
+
+        <View style={styles.modalBody}>
+          <TextInput 
+          placeholder='Digite a tarefa a fazer.'
+          styles={styles.inputModal}
+          />
+          <TouchableOpacity style={styles.btnModal}>
+            <Text>Cadastrar</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+
+    </Modal>
+
+    <AnimatedBtn 
+    style={styles.button}
+    useNativeDriver
+    animation="bounceInUp"
+    duration={1500}
+    onPress={ () => setOpen(true)}
+    >
+      <Ionicons name='ios-add' size={35} color='#fff' />
+    </AnimatedBtn>
   
   </SafeAreaView>
   );
@@ -71,6 +104,30 @@ const styles = StyleSheet.create({
       width: 1,
       height: 3,
     }
+
+  },
+  modal: {
+    flex: 1,
+    backgroundColor: '#171d31'
+  },
+  modalHeader:{
+    marginLeft: 10,
+    marginTop: 20,
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  modalTitle:{
+    marginLeft: 15,
+    fontSize: 30,
+    color: '#FFF'
+  },
+  modalBody:{
+
+  },
+  inputModal:{
+
+  },
+  btnModal:{
 
   },
 
