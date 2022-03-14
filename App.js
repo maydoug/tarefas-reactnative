@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, StatusBar, TouchableOpacity, FlatList, Modal, TextInput } from 'react-native';
+import React, { useState, useCallback, useEffect } from 'react';
+import { StyleSheet, Text, View, SafeAreaView, StatusBar, TouchableOpacity, FlatList, Modal, TextInput, AsyncStorage } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import TaskList from './src/componets/TaskList';
 import * as Animatable from 'react-native-animatable';
@@ -7,15 +7,29 @@ import * as Animatable from 'react-native-animatable';
 const AnimatedBtn = Animatable.createAnimatableComponent(TouchableOpacity);
 
 export default function App() {
-  const [task, setTask] = useState([
-    {key: 1, task: 'Compra pão' },
-    {key: 2, task: 'Compra açucar' },
-    {key: 3, task: 'Compra um carro novo' },
-    {key: 4, task: 'Votar no lula' },
-    {key: 5, task: 'Compra churrasco' },
-  ]);
+  const [task, setTask] = useState([]);
   
   const [open, setOpen] = useState(false);
+  const [input, setInput] = useState('');
+
+  function handleAdd(){
+    if (input === '') return;
+
+    const data = {
+      key: input,
+      task: input
+    };
+
+    setTask([...task, data]);
+    setOpen(false);
+    setInput('');
+
+  }
+
+  const handleDelete = useCallback((data) => {
+    const find = task.filter(r => r.key !== data.key);
+    setTask(find);
+  })
 
   return (
     
@@ -31,7 +45,7 @@ export default function App() {
     showsHorizontalScrollIndicator={false} 
     data={task}
     keyExtractor={ (item) => String(item.key) }
-    renderItem={ ({ item }) => <TaskList data={item} />}
+    renderItem={ ({ item }) => <TaskList data={item} handleDelete={handleDelete} />}
     
     />
 
@@ -44,15 +58,25 @@ export default function App() {
           <Text style={styles.modalTitle}>Nova tarefa</Text>
         </View>
 
-        <View style={styles.modalBody}>
-          <TextInput 
+        <Animatable.View 
+        animation='fadeInUp'
+        useNativeDriver
+        style={styles.modalBody}>
+          <TextInput
+          multiline={true}
+          placeholderTextColor='#747474'
+          autoCorrect={false}
           placeholder='Digite a tarefa a fazer.'
-          styles={styles.inputModal}
+          style={styles.inputModal}
+          value={input}
+          onChangeText={ (texto) => setInput(texto)}
           />
-          <TouchableOpacity style={styles.btnModal}>
+          <TouchableOpacity 
+          onPress={handleAdd}
+          style={styles.btnModal}>
             <Text style={styles.textBtnModal}>Cadastrar</Text>
           </TouchableOpacity>
-        </View>
+        </Animatable.View>
       </SafeAreaView>
 
     </Modal>
@@ -122,16 +146,35 @@ const styles = StyleSheet.create({
     color: '#FFF'
   },
   modalBody:{
-
+    marginTop: 15
   },
   inputModal:{
-
+    marginTop: 30,
+    marginLeft: 10,
+    marginRight: 10,
+    paddingBottom: 25,
+    padding: 9,
+    height: 115,
+    textAlignVertical: 'top',
+    backgroundColor: '#FFF',
+    color: '#000',
+    borderRadius: 5,
+    fontSize: 20
   },
   btnModal:{
+    backgroundColor: '#0094FF',
+    marginTop: 15,
+    marginLeft: 10,
+    marginRight: 10,
+    height: 35,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5
 
   },
   textBtnModal:{
-
+    fontSize: 20,
+    color: '#FFF'
   },
 
 });
